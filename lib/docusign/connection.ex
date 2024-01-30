@@ -128,18 +128,17 @@ defmodule DocuSign.Connection do
 
   @doc """
   Makes a request.
+
+  Raises `Tesla.Error.t()` if the HTTP connection fails, e.g. due to a timeout.
   """
-  @spec request(t(), Keyword.t()) :: %OAuth2.Response{}
+  @spec request(t(), Keyword.t()) :: Tesla.Env.t()
   def request(conn, opts \\ []) do
     timeout = Application.get_env(:docusign, :timeout, @timeout)
     opts = opts |> Keyword.merge(opts: [adapter: [timeout: timeout]])
 
-    {_, res} =
-      conn
-      |> Request.new()
-      |> Request.request(opts)
-
-    res
+    conn
+    |> Request.new()
+    |> Request.request!(opts)
   end
 
   @doc """
